@@ -1,0 +1,43 @@
+iso2,iso3,country_name,is_eu_member
+AT,AUT,Austria,1
+BE,BEL,Belgium,1
+BG,BGR,Bulgaria,1
+HR,HRV,Croatia,1
+CY,CYP,Cyprus,1
+CZ,CZE,Czechia,1
+DK,DNK,Denmark,1
+EE,EST,Estonia,1
+FI,FIN,Finland,1
+FR,FRA,France,1
+DE,DEU,Germany,1
+GR,GRC,Greece,1
+HU,HUN,Hungary,1
+IE,IRL,Ireland,1
+IT,ITA,Italy,1
+LV,LVA,Latvia,1
+LT,LTU,Lithuania,1
+LU,LUX,Luxembourg,1
+MT,MLT,Malta,1
+NL,NLD,Netherlands,1
+PL,POL,Poland,1
+PT,PRT,Portugal,1
+RO,ROU,Romania,1
+SK,SVK,Slovakia,1
+SI,SVN,Slovenia,1
+ES,ESP,Spain,1
+SE,SWE,Sweden,1
+UK,GBR,United Kingdom,0
+CH,CHE,Switzerland,0
+NO,NOR,Norway,0
+IS,ISL,Iceland,0
+MK,MKD,North Macedonia,0
+RS,SRB,Serbia,0
+BA,BIH,Bosnia and Herzegovina,0
+UA,UKR,Ukraine,0
+KH,KHM,Cambodia,0
+PS,PSE,Palestine,0
+ME,MNE,Montenegro,0
+AL,ALB,Albania,0
+GE,GEO,Georgia,0
+MD,MDA,Moldova,0
+TR,TUR,Turkey,0

@@ -1,0 +1,43 @@
+/// SIMULATED agencies of the fictional ministry. RLS filters this table.
+table DimAgency
+	lineageTag: a7b9738d-f9e8-5070-9051-2805b6dc341c
+
+	column AgencyKey
+		dataType: int64
+		isHidden
+		lineageTag: 7ed955e5-5164-50c8-8998-3e70f430392a
+		summarizeBy: none
+		sourceColumn: AgencyKey
+
+	column AgencyCode
+		dataType: string
+		lineageTag: e8a49b38-0ac7-575f-a830-d6608c0670e3
+		summarizeBy: none
+		sourceColumn: AgencyCode
+
+	column AgencyName
+		dataType: string
+		lineageTag: 90d7b7a0-e0ed-5fc9-b672-7c0fe5f0458b
+		summarizeBy: none
+		sourceColumn: AgencyName
+
+	column Ministry
+		dataType: string
+		lineageTag: a02a24b4-fa6e-5059-92e6-684dcd93d6a9
+		summarizeBy: none
+		sourceColumn: Ministry
+
+	partition DimAgency = m
+		mode: import
+		source =
+				// DimAgency: SIMULATED data (fictional ministry), schema sim
+				// Source: SQL Server view pbi.vDimAgency (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vDimAgency"]}[Data],
+				    Selected = Table.SelectColumns(View, {"AgencyKey", "AgencyCode", "AgencyName", "Ministry"})
+				in
+				    Selected
+

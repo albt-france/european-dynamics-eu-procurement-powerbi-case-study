@@ -1,0 +1,43 @@
+/// Calculation group: applies the same time variant to any measure (one definition instead of N x 6 measures).
+table 'Time Calc'
+	lineageTag: 3433dcae-73f2-5a03-bd74-1ea0e28210d7
+
+	calculationGroup
+		precedence: 10
+
+		calculationItem 'Selected period' = SELECTEDMEASURE ()
+			ordinal: 0
+
+		calculationItem 'Previous year' = CALCULATE ( SELECTEDMEASURE (), SAMEPERIODLASTYEAR ( DimDate[Date] ) )
+			ordinal: 1
+
+		calculationItem 'YoY change' = VAR cur = SELECTEDMEASURE () VAR py = CALCULATE ( SELECTEDMEASURE (), SAMEPERIODLASTYEAR ( DimDate[Date] ) ) RETURN IF ( NOT ISBLANK ( py ), cur - py )
+			ordinal: 2
+
+		calculationItem 'YoY %' = VAR cur = SELECTEDMEASURE () VAR py = CALCULATE ( SELECTEDMEASURE (), SAMEPERIODLASTYEAR ( DimDate[Date] ) ) RETURN IF ( NOT ISBLANK ( py ), DIVIDE ( cur - py, py ) )
+			ordinal: 3
+			formatStringDefinition = "+0%;-0%;0%"
+
+		calculationItem 'Year to date' = CALCULATE ( SELECTEDMEASURE (), DATESYTD ( DimDate[Date] ) )
+			ordinal: 4
+
+		calculationItem '3-year total' = CALCULATE ( SELECTEDMEASURE (), DATESINPERIOD ( DimDate[Date], MAX ( DimDate[Date] ), -3, YEAR ) )
+			ordinal: 5
+
+	column Period
+		dataType: string
+		lineageTag: 9b809a26-0ed8-5aec-9bec-fc04ec26d46a
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Ordinal
+
+	column Ordinal
+		dataType: int64
+		isHidden
+		lineageTag: edda1719-706e-56f2-a04c-4c601f6c0841
+		summarizeBy: none
+		sourceColumn: Ordinal
+
+	partition 'Time Calc' = calculationGroup
+		mode: import
+

@@ -1,0 +1,9 @@
+/// Dynamic RLS: a signed-in user sees only the agencies mapped to their account in SecUserAgency.
+role Agency
+	modelPermission: read
+
+	tablePermission DimAgency = [AgencyCode] IN CALCULATETABLE ( VALUES ( SecUserAgency[AgencyCode] ), SecUserAgency[UserPrincipalName] = USERPRINCIPALNAME () )
+
+	tablePermission SecUserAgency = [UserPrincipalName] = USERPRINCIPALNAME ()
+
+	annotation PBI_Id = 7521abc07efc523986c03145e4e25f5d

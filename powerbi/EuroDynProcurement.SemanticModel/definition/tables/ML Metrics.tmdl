@@ -1,0 +1,27 @@
+/// Cross-validated metrics of the single-offer model.
+table 'ML Metrics'
+	lineageTag: af28b2fb-ceb7-58a8-92be-d37adedeeb92
+
+	column Metric
+		dataType: string
+		lineageTag: 7fe0a3c9-f5ed-5351-b363-8a80ee1e6fd2
+		summarizeBy: none
+		sourceColumn: Metric
+
+	column Value
+		dataType: double
+		isHidden
+		lineageTag: f11ccabe-0f5f-505c-8e66-1e1768f1b720
+		summarizeBy: none
+		sourceColumn: Value
+
+	column Display
+		dataType: string
+		lineageTag: c5f7e7d2-ea99-565a-8fc3-dda1a9848b6c
+		summarizeBy: none
+		sourceColumn: Display
+
+	partition 'ML Metrics' = m
+		mode: import
+		source = #table(type table [Metric = text, Value = number, Display = text], {{"Rows (IT lots with offers stated)", 4748, "4,748"}, {"Single-offer rate", 0.2005054759898905, "20%"}, {"ROC AUC, gradient boosting (5-fold CV)", 0.8946663257875993, "0.89"}, {"ROC AUC, logistic regression (5-fold CV)", 0.867436045391804, "0.87"}, {"Average precision, best model", 0.7562830361144697, "0.76"}})
+

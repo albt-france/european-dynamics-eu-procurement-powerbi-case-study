@@ -1,0 +1,49 @@
+/// Contracting authorities (normalised names).
+table DimBuyer
+	lineageTag: 3b96ff68-04a5-5c56-aaa6-94054b3acd77
+
+	column BuyerKey
+		dataType: int64
+		isHidden
+		lineageTag: 3c6e9055-4a55-5cca-8fcc-949f82b8c5f4
+		summarizeBy: none
+		sourceColumn: BuyerKey
+
+	column BuyerName
+		dataType: string
+		lineageTag: 4b93bb85-0142-5680-b6bb-ee86a79bd81e
+		summarizeBy: none
+		sourceColumn: BuyerName
+
+	column BuyerType
+		dataType: string
+		lineageTag: 57c300a6-a8a2-5523-962d-990060ffdded
+		summarizeBy: none
+		sourceColumn: BuyerType
+
+	column BuyerGroup
+		dataType: string
+		lineageTag: dcdb3ce1-1ab3-5e82-806c-168591373dbb
+		summarizeBy: none
+		sourceColumn: BuyerGroup
+
+	column BuyerSegment
+		dataType: string
+		lineageTag: 2bf48072-49e9-5ebd-9a1d-2f566d6993ca
+		summarizeBy: none
+		sourceColumn: BuyerSegment
+
+	partition DimBuyer = m
+		mode: import
+		source =
+				// DimBuyer: PUBLIC DATA (TED), star schema dwh
+				// Source: SQL Server view pbi.vDimBuyer (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vDimBuyer"]}[Data],
+				    Selected = Table.SelectColumns(View, {"BuyerKey", "BuyerName", "BuyerType", "BuyerGroup", "BuyerSegment"})
+				in
+				    Selected
+

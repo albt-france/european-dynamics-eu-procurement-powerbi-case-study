@@ -1,0 +1,47 @@
+relationship e44ce5b1-d16d-5f8b-ad15-6e70609f99fb
+	fromColumn: FactAward.DateKey
+	toColumn: DimDate.DateKey
+
+relationship 7a6add7c-c2f3-5b03-b13b-5c511d5c891d
+	fromColumn: FactAward.BuyerKey
+	toColumn: DimBuyer.BuyerKey
+
+relationship 0cef6faf-eb12-5bfe-9956-c84fe1dc10fa
+	fromColumn: FactAward.CountryKey
+	toColumn: DimCountry.CountryKey
+
+relationship 6e14368d-0c45-52ed-8990-799c557a9664
+	fromColumn: FactAward.CpvKey
+	toColumn: DimCPV.CpvKey
+
+relationship ae1a21e9-6a29-57b4-916d-9867e8c5b3ac
+	fromColumn: FactAward.ProcedureKey
+	toColumn: DimProcedure.ProcedureKey
+
+relationship 4768064b-5a97-5018-b153-e8b42449fbfc
+	fromColumn: FactAward.EntityKey
+	toColumn: DimEntity.EntityKey
+
+relationship 5c652d20-610e-5582-bcec-38ac0b6e564a
+	fromColumn: FactFts.DateKey
+	toColumn: DimDate.DateKey
+
+relationship d0a04126-5733-5bba-999c-ad4e4ce18e71
+	fromColumn: FactFts.EntityCode
+	toColumn: DimEntity.EntityCode
+
+relationship 7e607300-3dcf-5b05-a44a-a8754b0afd79
+	fromColumn: FactFts.Department
+	toColumn: DimDepartment.Department
+
+relationship 6368ea69-4f4c-5b7d-be04-d48c2a84b60f
+	fromColumn: FactFts.Programme
+	toColumn: DimProgramme.Programme
+
+relationship 47dbd0a6-1a9c-5558-97da-2ee2c5a631cc
+	fromColumn: FactServiceRequest.DateKey
+	toColumn: DimDate.DateKey
+
+relationship 2c90804d-e25c-554e-8556-bda3e2d702ed
+	fromColumn: FactServiceRequest.AgencyKey
+	toColumn: DimAgency.AgencyKey

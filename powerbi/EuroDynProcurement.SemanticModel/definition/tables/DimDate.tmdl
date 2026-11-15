@@ -1,0 +1,77 @@
+/// Calendar 2016-2026 (marked as date table).
+table DimDate
+	lineageTag: 1b5c81e4-f5ae-5b03-bf35-75894e0d1ed0
+	dataCategory: Time
+
+	column DateKey
+		dataType: int64
+		isHidden
+		lineageTag: daa93c13-7a12-546c-a450-0f781ce93a38
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: ef1f7c44-2d8a-59d5-8fb1-41c517d77eed
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: ef0c92db-67c4-5115-a300-d655b0660eef
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a283a48-42c0-595b-8394-829a37a24bbe
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column MonthNo
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 81114c6a-986b-5f17-9058-7c7395cfca66
+		summarizeBy: none
+		sourceColumn: MonthNo
+
+	column MonthName
+		dataType: string
+		lineageTag: 47af24c9-43dc-5918-8a4e-ba12679e5108
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNo
+
+	column YearMonth
+		dataType: string
+		lineageTag: 6e30cb4e-f90d-5ce0-b68a-2f3ee4782841
+		summarizeBy: none
+		sourceColumn: YearMonth
+
+	column TedFormat
+		dataType: string
+		lineageTag: a4a1f3f6-59d8-5dd5-9dea-849cc66044db
+		summarizeBy: none
+		sourceColumn: TedFormat
+
+	partition DimDate = m
+		mode: import
+		source =
+				// DimDate: PUBLIC DATA (TED), star schema dwh
+				// Source: SQL Server view pbi.vDimDate (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vDimDate"]}[Data],
+				    Selected = Table.SelectColumns(View, {"DateKey", "Date", "Year", "Quarter", "MonthNo", "MonthName", "YearMonth", "TedFormat"})
+				in
+				    Selected
+

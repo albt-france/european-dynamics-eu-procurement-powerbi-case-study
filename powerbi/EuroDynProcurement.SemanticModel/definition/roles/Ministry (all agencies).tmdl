@@ -1,0 +1,5 @@
+/// Ministry management: every agency, read only.
+role 'Ministry (all agencies)'
+	modelPermission: read
+
+	annotation PBI_Id = 6d09e0505dbb58e882e238a43a175167

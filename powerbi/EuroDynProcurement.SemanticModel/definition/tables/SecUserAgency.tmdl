@@ -1,0 +1,31 @@
+/// SIMULATED RLS mapping: user principal name -> agency (fictional .example accounts).
+table SecUserAgency
+	lineageTag: 962124cc-cd06-56c1-8f9e-2560a90b11dc
+	isHidden
+
+	column UserPrincipalName
+		dataType: string
+		lineageTag: ce9046a2-6852-5609-88d6-f2c68fefc97a
+		summarizeBy: none
+		sourceColumn: UserPrincipalName
+
+	column AgencyCode
+		dataType: string
+		lineageTag: 6f240b30-2c83-5f61-b79e-5364d64860fb
+		summarizeBy: none
+		sourceColumn: AgencyCode
+
+	partition SecUserAgency = m
+		mode: import
+		source =
+				// SecUserAgency: SIMULATED data (fictional ministry), schema sim
+				// Source: SQL Server view pbi.vSecUserAgency (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vSecUserAgency"]}[Data],
+				    Selected = Table.SelectColumns(View, {"UserPrincipalName", "AgencyCode"})
+				in
+				    Selected
+

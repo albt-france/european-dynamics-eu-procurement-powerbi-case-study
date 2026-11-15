@@ -1,0 +1,86 @@
+/// Common Procurement Vocabulary, hierarchy Division > Group > Class > Code.
+table DimCPV
+	lineageTag: ff192f43-8e18-5eec-8dcb-880c21ed3326
+
+	column CpvKey
+		dataType: int64
+		isHidden
+		lineageTag: d93dffcd-65d7-5194-bd18-ee134135361c
+		summarizeBy: none
+		sourceColumn: CpvKey
+
+	column CpvCode
+		dataType: string
+		lineageTag: 9469e70f-031e-55de-a50d-0a34286463c8
+		summarizeBy: none
+		sourceColumn: CpvCode
+
+	column CpvLabel
+		dataType: string
+		lineageTag: ccedcc64-2999-5188-9aa8-64eeedf8dffc
+		summarizeBy: none
+		sourceColumn: CpvLabel
+
+	column Division
+		dataType: string
+		lineageTag: 548ad512-4f39-55fd-82bf-4e369794cfa9
+		summarizeBy: none
+		sourceColumn: Division
+
+	column Group
+		dataType: string
+		lineageTag: 59a525de-84d3-5dc3-bee0-7a173aa5343e
+		summarizeBy: none
+		sourceColumn: Group
+
+	column Class
+		dataType: string
+		lineageTag: ef1d42b1-f1c5-5f3b-99bf-6028eaa5d0ed
+		summarizeBy: none
+		sourceColumn: Class
+
+	column CpvCodeLabel
+		dataType: string
+		lineageTag: dde63b6d-0623-5f66-991e-0b2c2c98fda0
+		summarizeBy: none
+		sourceColumn: CpvCodeLabel
+
+	column IsITServices
+		dataType: boolean
+		lineageTag: ad0f56c6-e42a-586d-a454-cc994c04fdbd
+		summarizeBy: none
+		sourceColumn: IsITServices
+
+	hierarchy 'CPV hierarchy'
+		lineageTag: 3cc508cc-adeb-5adc-98c2-8b6593b2c08c
+
+		level Division
+			lineageTag: 27269308-5d5d-508a-8d99-8b6fc128ddd0
+			column: Division
+
+		level Group
+			lineageTag: b18757ab-b45b-5852-9db6-a4b1e86a9849
+			column: Group
+
+		level Class
+			lineageTag: 14f68948-fa5e-543f-9ce4-c76b889b1a53
+			column: Class
+
+		level CpvCodeLabel
+			lineageTag: d0f553d3-8220-50f4-9950-302241ab1d72
+			column: CpvCodeLabel
+
+	partition DimCPV = m
+		mode: import
+		source =
+				// DimCPV: PUBLIC DATA (TED), star schema dwh
+				// Source: SQL Server view pbi.vDimCPV (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vDimCPV"]}[Data],
+				    Selected = Table.SelectColumns(View, {"CpvKey", "CpvCode", "CpvLabel", "Division", "Group", "Class", "CpvCodeLabel", "IsITServices"})
+				in
+				    Selected
+

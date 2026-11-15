@@ -1,0 +1,54 @@
+/// Results of sql/06_quality_checks.sql.
+table QualityChecks
+	lineageTag: 6c7287fa-f61f-59f4-a42e-e2a0b05f4eae
+	isHidden
+
+	column CheckId
+		dataType: string
+		lineageTag: 6cab174d-238c-5dc8-8e16-5634f385e793
+		summarizeBy: none
+		sourceColumn: CheckId
+
+	column CheckName
+		dataType: string
+		lineageTag: 65230976-b8f6-5886-9938-fae50f445e90
+		summarizeBy: none
+		sourceColumn: CheckName
+
+	column Actual
+		dataType: double
+		formatString: #,0.##
+		lineageTag: 2b9acd8b-ac97-5f52-9a8e-7f061e28baba
+		summarizeBy: none
+		sourceColumn: Actual
+
+	column Expected
+		dataType: string
+		lineageTag: 5bfbc0d9-da26-5d2c-99d2-a5787df87268
+		summarizeBy: none
+		sourceColumn: Expected
+
+	column Status
+		dataType: string
+		lineageTag: 2e200110-d632-5b04-8bfe-ddf456fb5248
+		summarizeBy: none
+		sourceColumn: Status
+
+	column Note
+		dataType: string
+		lineageTag: d9287982-d254-56ad-845c-9caacb86c7bf
+		summarizeBy: none
+		sourceColumn: Note
+
+	partition QualityChecks = m
+		mode: import
+		source =
+				// QualityChecks: results of sql/06_quality_checks.sql, exported by src/load_sql.py (documentation page).
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "qa_checks.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"CheckId", type text}, {"CheckName", type text}, {"Actual", type number},
+				        {"Expected", type text}, {"Status", type text}, {"Note", type text}}, "en-US")
+				in
+				    Typed
+

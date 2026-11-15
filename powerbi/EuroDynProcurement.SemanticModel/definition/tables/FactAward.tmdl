@@ -1,0 +1,161 @@
+/// One row per published award (notice x lot x winning tender). PUBLIC DATA, TED.
+table FactAward
+	lineageTag: 46d5219a-3dc5-507b-9e9a-22b3490d29dd
+
+	column AwardKey
+		dataType: int64
+		isHidden
+		lineageTag: 6b12ba83-63f7-59e8-84e7-f74c63e690b4
+		summarizeBy: none
+		sourceColumn: AwardKey
+
+	column DateKey
+		dataType: int64
+		isHidden
+		lineageTag: 454ad320-d88d-53a4-9023-774f06b75128
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column BuyerKey
+		dataType: int64
+		isHidden
+		lineageTag: 2a660c6e-4584-5fbf-8954-71593daaac9f
+		summarizeBy: none
+		sourceColumn: BuyerKey
+
+	column CountryKey
+		dataType: int64
+		isHidden
+		lineageTag: 0c3a83ee-16f0-5469-8a81-529f0c0dfe81
+		summarizeBy: none
+		sourceColumn: CountryKey
+
+	column CpvKey
+		dataType: int64
+		isHidden
+		lineageTag: 11dc3979-0605-531e-bfef-2d49ffdb3615
+		summarizeBy: none
+		sourceColumn: CpvKey
+
+	column ProcedureKey
+		dataType: int64
+		isHidden
+		lineageTag: 29b4114d-92e8-54d2-ab89-e2c9edaf1a80
+		summarizeBy: none
+		sourceColumn: ProcedureKey
+
+	column EntityKey
+		dataType: int64
+		isHidden
+		lineageTag: aee3625f-ca20-5db2-866d-2242266485e0
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column IsED
+		dataType: boolean
+		lineageTag: ccea2327-06c3-5100-bec0-28b34cef2780
+		summarizeBy: none
+		sourceColumn: IsED
+
+	column EdRole
+		dataType: string
+		lineageTag: b467e281-3434-53a6-9ee0-5e396667fbbb
+		summarizeBy: none
+		sourceColumn: EdRole
+
+	column PartnerCount
+		dataType: int64
+		formatString: #,0
+		lineageTag: 0c60d261-333f-5c15-acf7-6f624ca3bb33
+		summarizeBy: none
+		sourceColumn: PartnerCount
+
+	column IsFramework
+		dataType: boolean
+		lineageTag: b6d77c09-6f87-54dd-ae2a-b296b9c90266
+		summarizeBy: none
+		sourceColumn: IsFramework
+
+	column NumberOfOffers
+		dataType: int64
+		formatString: #,0
+		lineageTag: 11c44c1c-6e85-5cc7-8c79-86b0f13558af
+		summarizeBy: none
+		sourceColumn: NumberOfOffers
+
+	column CountedValueEUR
+		dataType: decimal
+		isHidden
+		formatString: €#,0
+		lineageTag: d021d3d5-827f-5f3a-a18e-48cb2e64ee66
+		summarizeBy: none
+		sourceColumn: CountedValueEUR
+
+	column ValueSplitEUR
+		dataType: decimal
+		isHidden
+		formatString: €#,0
+		lineageTag: 50ca8582-737a-50cf-8961-2dbaf661adf0
+		summarizeBy: none
+		sourceColumn: ValueSplitEUR
+
+	column WinnersInLot
+		dataType: int64
+		formatString: #,0
+		lineageTag: 395cea74-852c-5ed2-b663-728641682bb5
+		summarizeBy: none
+		sourceColumn: WinnersInLot
+
+	column ValueSource
+		dataType: string
+		lineageTag: 0de0fad4-9f13-5154-9eb0-cd8ad9e2b8f2
+		summarizeBy: none
+		sourceColumn: ValueSource
+
+	column SourceSystem
+		dataType: string
+		lineageTag: cc37dc02-f00f-59cb-b236-2456d971c8ea
+		summarizeBy: none
+		sourceColumn: SourceSystem
+
+	column NoticeId
+		dataType: string
+		lineageTag: 96f4d778-a8b0-50d7-aa39-067de4fc929c
+		summarizeBy: none
+		sourceColumn: NoticeId
+
+	column WinnerLabel
+		dataType: string
+		lineageTag: 64bb10ae-e15e-58e4-8efe-3ef9e43b88e3
+		summarizeBy: none
+		sourceColumn: WinnerLabel
+
+	column Title
+		dataType: string
+		lineageTag: e41e821c-2623-5431-a0db-3f1176c563f1
+		summarizeBy: none
+		sourceColumn: Title
+
+	column TedNoticeUrl
+		dataType: string
+		dataCategory: WebUrl
+		lineageTag: 0e274560-a922-568c-9160-7f661db90bc6
+		summarizeBy: none
+		sourceColumn: TedNoticeUrl
+
+	partition FactAward = m
+		mode: import
+		source =
+				// FactAward: PUBLIC DATA (TED), star schema dwh
+				// Source: SQL Server view pbi.vFactAward (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vFactAward"]}[Data],
+				    Selected = Table.SelectColumns(View, {"AwardKey", "DateKey", "BuyerKey", "CountryKey", "CpvKey", "ProcedureKey", "EntityKey", "IsED", "EdRole", "PartnerCount", "IsFramework", "NumberOfOffers", "CountedValueEUR", "ValueSplitEUR", "WinnersInLot", "ValueSource", "SourceSystem", "NoticeId", "WinnerLabel", "Title", "TedNoticeUrl"}),
+				    // 2016 onwards: folds into the WHERE clause of the native query
+				    Recent = Table.SelectRows(Selected, each [DateKey] >= 20160101)
+				in
+				    Recent
+

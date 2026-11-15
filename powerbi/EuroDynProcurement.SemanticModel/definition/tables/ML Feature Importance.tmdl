@@ -1,0 +1,30 @@
+/// Permutation importance (drop in ROC AUC) of the single-offer model, src/ml_single_offer.py. PUBLIC DATA.
+table 'ML Feature Importance'
+	lineageTag: afb4e04c-4b5c-5763-829d-cef8d956fbd9
+
+	column Feature
+		dataType: string
+		lineageTag: 72a2fe68-3107-579d-a39f-6262e8fe819b
+		summarizeBy: none
+		sourceColumn: Feature
+		sortByColumn: Rank
+
+	column Importance
+		dataType: double
+		formatString: 0.000
+		lineageTag: ade27428-1d71-532e-83d8-a6396169a336
+		summarizeBy: sum
+		sourceColumn: Importance
+
+	column Rank
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4f048d96-7fb9-51aa-83de-7e3821a7ea87
+		summarizeBy: none
+		sourceColumn: Rank
+
+	partition 'ML Feature Importance' = m
+		mode: import
+		source = #table(type table [Feature = text, Importance = number, Rank = Int64.Type], {{"Procedure", 0.1460, 1}, {"Buyer country", 0.0853, 2}, {"Contract value (log)", 0.0346, 3}, {"Buyer type", 0.0239, 4}, {"CPV group", 0.0143, 5}, {"Framework agreement", 0.0115, 6}, {"Year", 0.0047, 7}, {"TED format", -0.0002, 8}})
+

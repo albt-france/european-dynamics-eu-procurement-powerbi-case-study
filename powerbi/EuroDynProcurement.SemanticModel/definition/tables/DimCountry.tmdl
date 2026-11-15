@@ -1,0 +1,50 @@
+/// Country of the buyer.
+table DimCountry
+	lineageTag: 34dab78f-7a9f-55ab-9234-c69e1c98f8ae
+
+	column CountryKey
+		dataType: int64
+		isHidden
+		lineageTag: 3fe60d86-8d6b-53c3-95d5-f22bbc16dc7e
+		summarizeBy: none
+		sourceColumn: CountryKey
+
+	column ISO2
+		dataType: string
+		lineageTag: c49d6dbf-365d-53b2-84d6-917d80bdd885
+		summarizeBy: none
+		sourceColumn: ISO2
+
+	column ISO3
+		dataType: string
+		lineageTag: 0e9e6299-5eda-5b93-894d-17e8769b437d
+		summarizeBy: none
+		sourceColumn: ISO3
+
+	column CountryName
+		dataType: string
+		dataCategory: Country
+		lineageTag: 04bd0b68-fb51-560f-9c19-de03943417f7
+		summarizeBy: none
+		sourceColumn: CountryName
+
+	column CountryGroup
+		dataType: string
+		lineageTag: 56edaac9-268d-5853-b74a-480c40f63812
+		summarizeBy: none
+		sourceColumn: CountryGroup
+
+	partition DimCountry = m
+		mode: import
+		source =
+				// DimCountry: PUBLIC DATA (TED), star schema dwh
+				// Source: SQL Server view pbi.vDimCountry (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vDimCountry"]}[Data],
+				    Selected = Table.SelectColumns(View, {"CountryKey", "ISO2", "ISO3", "CountryName", "CountryGroup"})
+				in
+				    Selected
+

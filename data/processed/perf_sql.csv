@@ -1,0 +1,7 @@
+query,state,logical_reads,median_ms
+"Awards and value per year, one entity (Overview)",before (no nonclustered index),190,0.99
+Awards for one buyer (drill-through / tooltip),before (no nonclustered index),372,1.5
+One month of awards (date slicer),before (no nonclustered index),186,0.44
+"Awards and value per year, one entity (Overview)",after (indexes),6,0.18
+Awards for one buyer (drill-through / tooltip),after (indexes),6,0.21
+One month of awards (date slicer),after (indexes),3,0.13

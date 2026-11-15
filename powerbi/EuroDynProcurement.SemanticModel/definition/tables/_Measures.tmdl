@@ -1,0 +1,230 @@
+/// Home table of all measures (display folders = report sections).
+table _Measures
+	lineageTag: 2779232e-e13e-5725-8b83-920304fba200
+
+	/// Number of award rows (notice x lot x winning tender) won by a European Dynamics entity, alone or in a group.
+	measure 'ED Awards' = CALCULATE ( COUNTROWS ( FactAward ), FactAward[IsED] = TRUE () )
+		formatString: #,0
+		displayFolder: 1 Awards
+		lineageTag: 68bfa0ac-c628-5dc0-8dba-8adeaccf02c0
+
+	/// All award rows in the model: European Dynamics plus the CPV 72 market context of the same buyers and EU institutions.
+	measure 'All Awards' = COUNTROWS ( FactAward )
+		formatString: #,0
+		displayFolder: 1 Awards
+		lineageTag: a1c3fafb-40a4-5c24-bbe9-2f9e734c6224
+
+	/// Value of the lots won by European Dynamics, split equally between the winning tenders of a lot (a framework with 5 winners counts 1/5 of its value). Framework values are ceilings, not spending.
+	measure 'ED Award Value' = CALCULATE ( SUM ( FactAward[ValueSplitEUR] ), FactAward[IsED] = TRUE () )
+		formatString: €#,0.0,,M
+		displayFolder: 1 Awards
+		lineageTag: a67e8e55-36c3-5001-a178-46facf748be9
+
+	/// Value of all lots in the model, each lot counted once (equal split summed over its winners).
+	measure 'All Award Value' = SUM ( FactAward[ValueSplitEUR] )
+		formatString: €#,0.0,,M
+		displayFolder: 1 Awards
+		lineageTag: 9a425576-f87f-59bd-a18e-ad9878b6b205
+
+	/// Full published value of lots where European Dynamics is among the winners, counted once per lot (no split). Upper bound; shown for transparency only.
+	measure 'ED Ceiling Value' = CALCULATE ( SUM ( FactAward[CountedValueEUR] ), FactAward[IsED] = TRUE () )
+		formatString: €#,0.0,,M
+		displayFolder: 1 Awards
+		lineageTag: 38e11a2d-ece4-5e4a-99aa-9ced4b2834c7
+
+	/// Median equal-split value of a European Dynamics award: robust to the very large framework ceilings.
+	measure 'ED Median Award Value' = CALCULATE ( MEDIAN ( FactAward[ValueSplitEUR] ), FactAward[IsED] = TRUE () )
+		formatString: €#,0
+		displayFolder: 1 Awards
+		lineageTag: b150002f-1862-5a89-b89d-6f06cd3b5b7e
+
+	/// Distinct contracting authorities that awarded at least one lot to European Dynamics.
+	measure 'ED Buyers' = CALCULATE ( DISTINCTCOUNT ( FactAward[BuyerKey] ), FactAward[IsED] = TRUE () )
+		formatString: #,0
+		displayFolder: 1 Awards
+		lineageTag: 59489ec8-4eab-5299-9183-1c501f5d85f4
+
+	/// Buyers with two or more European Dynamics awards in the current filter context (buyer loyalty).
+	measure 'ED Repeat Buyers' = COUNTROWS ( FILTER ( VALUES ( DimBuyer[BuyerKey] ), [ED Awards] >= 2 ) )
+		formatString: #,0
+		displayFolder: 1 Awards
+		lineageTag: a5b34b27-7e1b-58b8-880c-1eef0d7fdddd
+
+	/// Share of European Dynamics buyers that awarded it at least twice.
+	measure 'ED Repeat Buyer Rate' = DIVIDE ( [ED Repeat Buyers], [ED Buyers] )
+		formatString: 0%
+		displayFolder: 1 Awards
+		lineageTag: 47ed8c7e-4ded-5d91-9814-2b05a36446aa
+
+	/// Distinct buyer countries (location of the contracting authority, so EU agencies count in their host country).
+	measure 'ED Countries' = CALCULATE ( DISTINCTCOUNT ( FactAward[CountryKey] ), FactAward[IsED] = TRUE () )
+		formatString: #,0
+		displayFolder: 1 Awards
+		lineageTag: d40ac574-499a-5790-94b3-7b33a0bbe098
+
+	/// Share of European Dynamics awards whose buyer is an EU institution, agency or body.
+	measure 'ED Share from EU Institutions' = DIVIDE ( CALCULATE ( [ED Awards], DimBuyer[BuyerSegment] = "EU institutions and agencies" ), [ED Awards] )
+		formatString: 0%
+		displayFolder: 1 Awards
+		lineageTag: b141c05d-0a06-54cf-83fd-03482df3ad69
+
+	/// Share of European Dynamics awards won together with companies outside the group.
+	measure 'ED Consortium Share' = DIVIDE ( CALCULATE ( [ED Awards], FactAward[EdRole] = "Consortium with partners" ), [ED Awards] )
+		formatString: 0%
+		displayFolder: 1 Awards
+		lineageTag: 02c96d93-ed9f-5670-b78d-86dc37033fcd
+
+	/// European Dynamics' equal-split value / value of all CPV 72 (IT services) lots of the same buyers and of EU institutions.
+	measure 'ED Share of CPV 72 Value' = DIVIDE ( CALCULATE ( [ED Award Value], DimCPV[IsITServices] = TRUE () ), CALCULATE ( [All Award Value], DimCPV[IsITServices] = TRUE () ) )
+		formatString: 0.0%
+		displayFolder: 2 Market and competition
+		lineageTag: 82ee741b-b130-5da7-b175-a4eaaeb1ad1a
+
+	/// Same share, counted in award rows instead of value.
+	measure 'ED Share of CPV 72 Awards' = DIVIDE ( CALCULATE ( [ED Awards], DimCPV[IsITServices] = TRUE () ), CALCULATE ( [All Awards], DimCPV[IsITServices] = TRUE () ) )
+		formatString: 0.0%
+		displayFolder: 2 Market and competition
+		lineageTag: 11734252-394d-5be1-a098-13d884d6fab3
+
+	/// Average number of offers received on lots won by European Dynamics (where the notice states it).
+	measure 'ED Avg Offers' = CALCULATE ( AVERAGE ( FactAward[NumberOfOffers] ), FactAward[IsED] = TRUE () )
+		formatString: #,0.0
+		displayFolder: 2 Market and competition
+		lineageTag: 316bd3a2-b1d6-590a-ab63-3d45567b2841
+
+	/// Average number of offers on the other lots of the model (comparison base).
+	measure 'Market Avg Offers' = CALCULATE ( AVERAGE ( FactAward[NumberOfOffers] ), FactAward[IsED] = FALSE () )
+		formatString: #,0.0
+		displayFolder: 2 Market and competition
+		lineageTag: 747ae11d-5cf2-5fe1-b280-9543a9cc76e8
+
+	/// Share of European Dynamics lots that received one offer. One offer is not an anomaly in itself (e.g. negotiated procedures, specialised maintenance).
+	measure 'ED Single-Offer Share' = DIVIDE ( CALCULATE ( COUNTROWS ( FactAward ), FactAward[IsED] = TRUE (), FactAward[NumberOfOffers] = 1 ), CALCULATE ( COUNTROWS ( FactAward ), FactAward[IsED] = TRUE (), NOT ISBLANK ( FactAward[NumberOfOffers] ) ) )
+		formatString: 0%
+		displayFolder: 2 Market and competition
+		lineageTag: 838b38bc-4baa-5fc9-bc1e-89a94310e7c9
+
+	/// Same share for the other lots of the model.
+	measure 'Market Single-Offer Share' = DIVIDE ( CALCULATE ( COUNTROWS ( FactAward ), FactAward[IsED] = FALSE (), FactAward[NumberOfOffers] = 1 ), CALCULATE ( COUNTROWS ( FactAward ), FactAward[IsED] = FALSE (), NOT ISBLANK ( FactAward[NumberOfOffers] ) ) )
+		formatString: 0%
+		displayFolder: 2 Market and competition
+		lineageTag: b0387eb4-f878-5af8-aba2-e350c149de6a
+
+	/// Share of European Dynamics awards that are framework agreements.
+	measure 'ED Framework Share' = DIVIDE ( CALCULATE ( [ED Awards], FactAward[IsFramework] = TRUE () ), [ED Awards] )
+		formatString: 0%
+		displayFolder: 2 Market and competition
+		lineageTag: 4af28d17-21a9-5790-916f-e153ae9c82b2
+
+	/// Year-to-date European Dynamics awards (calendar year).
+	measure 'ED Awards YTD' = TOTALYTD ( [ED Awards], DimDate[Date] )
+		formatString: #,0
+		displayFolder: 3 Time intelligence
+		lineageTag: 2b0a2ae3-1215-5fd8-9b5f-a031aab3ca12
+
+	/// European Dynamics awards in the same period of the previous year.
+	measure 'ED Awards PY' = CALCULATE ( [ED Awards], SAMEPERIODLASTYEAR ( DimDate[Date] ) )
+		formatString: #,0
+		displayFolder: 3 Time intelligence
+		lineageTag: f57abcfe-e227-597c-a99d-741a6a2317e6
+
+	/// Change versus previous year. 2026 is a partial year (data to mid-November).
+	measure 'ED Awards YoY %' = VAR cur = [ED Awards] VAR py = [ED Awards PY] RETURN IF ( NOT ISBLANK ( py ), DIVIDE ( cur - py, py ) )
+		formatString: +0%;-0%;0%
+		displayFolder: 3 Time intelligence
+		lineageTag: e8155c75-6ef4-510a-bb3c-ef2562012a61
+
+	/// Average yearly awards over the last three years ending at the current date context.
+	measure 'ED Awards 3Y Moving Avg' = VAR lastDate = MAX ( DimDate[Date] ) RETURN DIVIDE ( CALCULATE ( [ED Awards], DATESINPERIOD ( DimDate[Date], lastDate, -3, YEAR ) ), 3 )
+		formatString: #,0.0
+		displayFolder: 3 Time intelligence
+		lineageTag: a16e5d61-e128-5054-99b5-cb79014118ba
+
+	/// European Commission legal commitments to European Dynamics entities, by year of commitment (FTS).
+	measure 'FTS Contracted' = SUM ( FactFts[ContractedEUR] )
+		formatString: €#,0.0,,M
+		displayFolder: 4 EU budget (FTS)
+		lineageTag: 94e89ee0-ab1b-5865-a6a2-310c07510ac8
+
+	/// Estimated consumed amount of those commitments (payments made until publication, as reported by FTS).
+	measure 'FTS Est. Consumed' = SUM ( FactFts[EstConsumedEUR] )
+		formatString: €#,0.0,,M
+		displayFolder: 4 EU budget (FTS)
+		lineageTag: 51fc5134-3a8b-5e38-8f68-72b1bbd828f4
+
+	/// Estimated consumed / contracted.
+	measure 'FTS Consumption Rate' = DIVIDE ( [FTS Est. Consumed], [FTS Contracted] )
+		formatString: 0%
+		displayFolder: 4 EU budget (FTS)
+		lineageTag: 7a1d49f3-38ce-5631-b4e2-a64f3d8b0564
+
+	/// Share of the largest Commission department in the contracted amount (concentration).
+	measure 'FTS Top Department Share' = DIVIDE ( MAXX ( VALUES ( DimDepartment[Department] ), [FTS Contracted] ), [FTS Contracted] )
+		formatString: 0%
+		displayFolder: 4 EU budget (FTS)
+		lineageTag: 906651ee-6d68-5def-ae9c-bd7c2cb498b4
+
+	/// Commission departments with a positive commitment.
+	measure 'FTS Departments' = CALCULATE ( DISTINCTCOUNT ( FactFts[Department] ), FactFts[ContractedEUR] > 0 )
+		formatString: #,0
+		displayFolder: 4 EU budget (FTS)
+		lineageTag: 43a76b12-f4b3-55a5-83c8-37a9c5436440
+
+	/// SIMULATED citizen requests.
+	measure Requests = COUNTROWS ( FactServiceRequest )
+		formatString: #,0
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: 6aad6594-3ae2-5d20-b403-1738f9c63abc
+
+	/// Closed requests resolved within their SLA target (24 h high, 72 h normal, 120 h low).
+	measure 'SLA Met %' = DIVIDE ( CALCULATE ( COUNTROWS ( FactServiceRequest ), FactServiceRequest[IsSlaMet] = TRUE () ), CALCULATE ( COUNTROWS ( FactServiceRequest ), FactServiceRequest[IsClosed] = TRUE () ) )
+		formatString: 0.0%
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: bbb5e97e-6037-5a1c-b4f8-708a4db7178e
+
+	/// Distance to the 90% SLA target set by the fictional ministry.
+	measure 'SLA Gap vs 90% Target' = [SLA Met %] - 0.9
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: 44f534b1-d582-52c6-aa0e-c3c94e2f1e37
+
+	/// Median hours from opening to closing (closed requests).
+	measure 'Median Resolution (h)' = MEDIAN ( FactServiceRequest[ResolutionHours] )
+		formatString: #,0.0
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: a1bdca87-fc6d-5614-8933-e8ebfbe56075
+
+	/// 90th percentile of resolution time: the slow tail citizens notice.
+	measure 'P90 Resolution (h)' = PERCENTILE.INC ( FactServiceRequest[ResolutionHours], 0.9 )
+		formatString: #,0.0
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: 8de0b6b4-cd3d-5725-93b6-02cfe46b8ad9
+
+	/// Requests still open at the end of the simulated period.
+	measure 'Open Backlog' = CALCULATE ( COUNTROWS ( FactServiceRequest ), FactServiceRequest[IsClosed] = FALSE () )
+		formatString: #,0
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: 6c5dfd84-97d6-530e-91fc-1e506353b87e
+
+	/// Average satisfaction score (1-5) of closed requests.
+	measure 'Avg Satisfaction' = AVERAGE ( FactServiceRequest[Satisfaction] )
+		formatString: 0.00
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: fe9206c0-9978-5ee2-af8d-6fb42bf01974
+
+	/// Dynamic label: shows which agencies the current user may see (RLS check).
+	measure 'Visible Agencies Label' = VAR n = DISTINCTCOUNT ( DimAgency[AgencyCode] ) RETURN IF ( n = 1, "Agency view: " & SELECTEDVALUE ( DimAgency[AgencyName] ), "Ministry view: " & n & " agencies" )
+		displayFolder: 5 Service desk (SIMULATED)
+		lineageTag: e6f875c4-00ed-538e-ac80-d905d88d0647
+
+	column _
+		dataType: string
+		isHidden
+		lineageTag: cc125bc6-025e-59d6-8adb-4f190d5aed60
+		summarizeBy: none
+		sourceColumn: _
+
+	partition _Measures = m
+		mode: import
+		source = #table(type table [_ = text], {})
+

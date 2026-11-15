@@ -1,0 +1,49 @@
+/// Field parameter: lets the reader switch the axis of the comparison charts.
+table Axis
+	lineageTag: 7c87b86c-5208-5432-90fd-756420c049f4
+
+	column Axis
+		dataType: string
+		lineageTag: e314aef8-b554-539a-b695-a54f6bec87e6
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Axis Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Axis Fields'
+
+	column 'Axis Fields'
+		dataType: string
+		isHidden
+		lineageTag: d61ef069-46cf-5225-bc68-7b15a373cd54
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Axis Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	column 'Axis Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6ab1b2fe-359e-5a79-ae44-7d3e29a3285d
+		summarizeBy: none
+		sourceColumn: [Value3]
+
+	partition Axis = calculated
+		mode: import
+		source =
+				{
+					("Buyer country", NAMEOF ( 'DimCountry'[CountryName] ), 0),
+					("Buyer segment", NAMEOF ( 'DimBuyer'[BuyerSegment] ), 1),
+					("CPV division", NAMEOF ( 'DimCPV'[Division] ), 2),
+					("Procedure", NAMEOF ( 'DimProcedure'[ProcedureLabel] ), 3),
+					("European Dynamics entity", NAMEOF ( 'DimEntity'[EntityName] ), 4)
+				}
+
+	annotation PBI_Id = 2cf1b98762e254b3859cf65c6781270d
+

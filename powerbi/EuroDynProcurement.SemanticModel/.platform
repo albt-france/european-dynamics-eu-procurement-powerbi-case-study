@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "EuroDynProcurement"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "4d158864-5c29-5aae-b6cd-8dc159c8eb8a"
+  }
+}

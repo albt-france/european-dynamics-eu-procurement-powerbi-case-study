@@ -1,0 +1,34 @@
+// FtsStaging (not loaded): Financial Transparency System rows of the European Dynamics entities. PUBLIC DATA.
+// Second source of the model. Target design: PostgreSQL (sql/postgres/01_fts.sql); the connection line is kept
+// below. Fallback used in this repository: the same extract as a CSV file (no PostgreSQL server on the build PC).
+// The steps do not fold (file source): they run in the mashup engine, which is fine for ~5.5k rows.
+let
+    // Source = PostgreSQL.Database(PgServer, PgDatabase){[Schema = "fts", Item = "fts_ed"]}[Data],
+    Source = Csv.Document(File.Contents(DataFolder & "staging\fts_ed.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+    Typed = Table.TransformColumnTypes(Promoted, {{"year", Int64.Type}, {"contracted_eur", type number},
+        {"est_consumed_eur", type number}, {"beneficiary_name", type text}, {"department", type text},
+        {"programme_name", type text}, {"contract_type", type text}, {"expense_type", type text}}, "en-US"),
+    InRange = Table.SelectRows(Typed, each [year] >= 2016 and [year] <= 2026),
+    // "X - DEVCO - ..." marks a former department: drop the prefix; empty -> "N/A - Not stated"
+    CleanDepartment = Table.TransformColumns(InRange, {{"department", each
+        let t = Text.Replace(Text.Trim(_ ?? ""), "  ", " ")
+        in if Text.StartsWith(t, "X - ") then Text.Middle(t, 4) else if t = "" then "N/A - Not stated" else t, type text}}),
+    CleanProgramme = Table.TransformColumns(CleanDepartment, {{"programme_name", each if _ = null or _ = "" then "Not stated" else _, type text}}),
+    // name resolution, step 1: legal name before the "*" alias, upper case
+    CleanName = Table.AddColumn(CleanProgramme, "BeneficiaryClean", each
+        let n = Text.Upper(Text.Trim([beneficiary_name] ?? "")) in
+        if Text.Contains(n, "*") then Text.Trim(Text.BeforeDelimiter(n, "*")) else n, type text),
+    // name resolution, step 2: fuzzy merge against canonical spellings (same result as the SQL alias table)
+    Aliases = #table(type table [Alias = text, EntityCode = text], {
+        {"EUROPEAN DYNAMICS LUXEMBOURG SA", "ED-LU"},
+        {"CONSORTIUM EUROPEAN DYNAMICS", "ED-LU"},
+        {"EUROPEAN DYNAMICS ADVANCED INFORMATION TECHNOLOGY AND TELECOMMUNICATION SYSTEMS SA", "ED-GR"},
+        {"EUROPEAN DYNAMICS ADVANCED SYSTEMS OF TELECOMMUNICATIONS INFORMATICS AND TELEMATICS SA", "ED-GR"},
+        {"EUROPEAN DYNAMICS BELGIUM SA", "ED-BE"}}),
+    Fuzzy = Table.FuzzyNestedJoin(CleanName, {"BeneficiaryClean"}, Aliases, {"Alias"}, "Match", JoinKind.LeftOuter,
+        [IgnoreCase = true, IgnoreSpace = true, Threshold = 0.8, NumberOfMatches = 1]),
+    Expanded = Table.ExpandTableColumn(Fuzzy, "Match", {"EntityCode"}, {"EntityCode"}),
+    Resolved = Table.ReplaceValue(Expanded, null, "ED-XX", Replacer.ReplaceValue, {"EntityCode"})
+in
+    Resolved

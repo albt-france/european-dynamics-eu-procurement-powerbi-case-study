@@ -1,0 +1,160 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "decomp",
+  "position": {
+    "x": 32,
+    "y": 724,
+    "z": 14000,
+    "height": 304,
+    "width": 918,
+    "tabOrder": 14000
+  },
+  "visual": {
+    "visualType": "decompositionTreeVisual",
+    "query": {
+      "queryState": {
+        "Analyze": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "ED Awards"
+                }
+              },
+              "queryRef": "_Measures.ED Awards",
+              "nativeQueryRef": "ED Awards"
+            }
+          ]
+        },
+        "ExplainBy": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimBuyer"
+                    }
+                  },
+                  "Property": "BuyerSegment"
+                }
+              },
+              "queryRef": "DimBuyer.BuyerSegment",
+              "nativeQueryRef": "BuyerSegment"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimBuyer"
+                    }
+                  },
+                  "Property": "BuyerGroup"
+                }
+              },
+              "queryRef": "DimBuyer.BuyerGroup",
+              "nativeQueryRef": "BuyerGroup"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCountry"
+                    }
+                  },
+                  "Property": "CountryName"
+                }
+              },
+              "queryRef": "DimCountry.CountryName",
+              "nativeQueryRef": "CountryName"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimEntity"
+                    }
+                  },
+                  "Property": "EntityName"
+                }
+              },
+              "queryRef": "DimEntity.EntityName",
+              "nativeQueryRef": "EntityName"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimProcedure"
+                    }
+                  },
+                  "Property": "ProcedureFamily"
+                }
+              },
+              "queryRef": "DimProcedure.ProcedureFamily",
+              "nativeQueryRef": "ProcedureFamily"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'AI visual - decomposition tree: drill awards by segment, buyer group, country, entity, procedure'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Decomposition tree (Power BI AI visual) splitting European Dynamics awards by buyer segment, buyer group, country, entity and procedure.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

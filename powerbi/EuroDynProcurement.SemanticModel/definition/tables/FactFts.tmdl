@@ -1,0 +1,91 @@
+/// Financial Transparency System, European Dynamics rows: legal commitments by year. PUBLIC DATA.
+table FactFts
+	lineageTag: 46ef31c7-ce4e-58bc-b687-c38074a544ec
+
+	column Year
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5eedcb66-ca5d-592a-bfce-bbb133dfc0b5
+		summarizeBy: none
+		sourceColumn: Year
+
+	column DateKey
+		dataType: int64
+		isHidden
+		lineageTag: 90806b25-82c5-5f28-b287-12560002da15
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column EntityCode
+		dataType: string
+		isHidden
+		lineageTag: 3504e997-a887-54b8-94c6-dd4c4d6ad29a
+		summarizeBy: none
+		sourceColumn: EntityCode
+
+	column Department
+		dataType: string
+		isHidden
+		lineageTag: cbfb5689-df79-5048-a945-a1f4a50aeb15
+		summarizeBy: none
+		sourceColumn: Department
+
+	column Programme
+		dataType: string
+		isHidden
+		lineageTag: 463186c5-4d55-5745-9653-884711502507
+		summarizeBy: none
+		sourceColumn: Programme
+
+	column ContractType
+		dataType: string
+		lineageTag: 9549328f-4e5e-5c9c-90f2-b75834bee58f
+		summarizeBy: none
+		sourceColumn: ContractType
+
+	column ExpenseType
+		dataType: string
+		lineageTag: a3498480-2e98-5b16-a747-21438a46625a
+		summarizeBy: none
+		sourceColumn: ExpenseType
+
+	column IsConsortium
+		dataType: boolean
+		lineageTag: c8e82c69-f753-50eb-95d3-aa502d44eff9
+		summarizeBy: none
+		sourceColumn: IsConsortium
+
+	column ContractedEUR
+		dataType: double
+		isHidden
+		formatString: €#,0
+		lineageTag: 204e3e93-d21b-58ca-8f18-5a507d14ce60
+		summarizeBy: none
+		sourceColumn: ContractedEUR
+
+	column EstConsumedEUR
+		dataType: double
+		isHidden
+		formatString: €#,0
+		lineageTag: a5d08e66-a431-580d-bda5-fabd6fa52e97
+		summarizeBy: none
+		sourceColumn: EstConsumedEUR
+
+	partition FactFts = m
+		mode: import
+		source =
+				// FactFts: one row per FTS line (year x legal commitment x budget line x beneficiary). PUBLIC DATA.
+				// Amounts are LEGAL COMMITMENTS by year (contracted amounts), not cash payments.
+				let
+				    Source = FtsStaging,
+				    DateKey = Table.AddColumn(Source, "DateKey", each [year] * 10000 + 101, Int64.Type),
+				    Consortium = Table.AddColumn(DateKey, "IsConsortium", each Text.StartsWith([BeneficiaryClean], "CONSORTIUM"), type logical),
+				    Selected = Table.SelectColumns(Consortium, {"year", "DateKey", "EntityCode", "department", "programme_name",
+				        "contract_type", "expense_type", "IsConsortium", "contracted_eur", "est_consumed_eur"}),
+				    Renamed = Table.RenameColumns(Selected, {{"year", "Year"}, {"department", "Department"}, {"programme_name", "Programme"},
+				        {"contract_type", "ContractType"}, {"expense_type", "ExpenseType"}, {"contracted_eur", "ContractedEUR"},
+				        {"est_consumed_eur", "EstConsumedEUR"}})
+				in
+				    Renamed
+

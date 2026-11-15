@@ -1,0 +1,91 @@
+/// SIMULATED citizen requests of a fictional ministry (RLS demo).
+table FactServiceRequest
+	lineageTag: 0a4eabca-1f50-57e1-ac90-0b71c6db0891
+
+	column RequestId
+		dataType: string
+		lineageTag: 1e800a57-b729-5dc0-8034-4f2e57e7832a
+		summarizeBy: none
+		sourceColumn: RequestId
+
+	column DateKey
+		dataType: int64
+		isHidden
+		lineageTag: f35801cb-eab0-5ec4-ad7f-623c44f61a73
+		summarizeBy: none
+		sourceColumn: DateKey
+
+	column AgencyKey
+		dataType: int64
+		isHidden
+		lineageTag: 1a5675f1-10c0-50af-8975-b767ad7e129c
+		summarizeBy: none
+		sourceColumn: AgencyKey
+
+	column ServiceName
+		dataType: string
+		lineageTag: 73cb9cf9-d30f-5dce-a9c0-2e72836dff32
+		summarizeBy: none
+		sourceColumn: ServiceName
+
+	column Channel
+		dataType: string
+		lineageTag: 548489a0-257f-5015-a39f-e1e9067fcb5d
+		summarizeBy: none
+		sourceColumn: Channel
+
+	column Priority
+		dataType: string
+		lineageTag: b907487e-50aa-5d23-92fc-b49686505968
+		summarizeBy: none
+		sourceColumn: Priority
+
+	column SlaTargetHours
+		dataType: int64
+		formatString: #,0
+		lineageTag: 86ba6634-ac28-5c20-b82d-9c65f8ee2a46
+		summarizeBy: none
+		sourceColumn: SlaTargetHours
+
+	column ResolutionHours
+		dataType: decimal
+		isHidden
+		formatString: #,0.0
+		lineageTag: 2ab05754-346b-571e-8ae8-6ca07191675e
+		summarizeBy: none
+		sourceColumn: ResolutionHours
+
+	column IsClosed
+		dataType: boolean
+		lineageTag: 22412d39-6317-5456-bea6-3007d9fb3d15
+		summarizeBy: none
+		sourceColumn: IsClosed
+
+	column IsSlaMet
+		dataType: boolean
+		lineageTag: 164e57f8-e2c9-57d5-a0d2-510a2fdf9821
+		summarizeBy: none
+		sourceColumn: IsSlaMet
+
+	column Satisfaction
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5d0394e2-1fe6-50a5-8b5d-e021314d3972
+		summarizeBy: none
+		sourceColumn: Satisfaction
+
+	partition FactServiceRequest = m
+		mode: import
+		source =
+				// FactServiceRequest: SIMULATED data (fictional ministry), schema sim
+				// Source: SQL Server view pbi.vFactServiceRequest (sql/05_views_powerbi.sql). Every step folds to SQL Server:
+				// right-click the last step > View Native Query shows a single SELECT. The same M runs unchanged in a
+				// Power BI dataflow (Power Query Online, through the on-premises data gateway): see docs/DATAFLOWS.md.
+				let
+				    Source = Sql.Database(ServerName, DatabaseName),
+				    View = Source{[Schema = "pbi", Item = "vFactServiceRequest"]}[Data],
+				    Selected = Table.SelectColumns(View, {"RequestId", "DateKey", "AgencyKey", "ServiceName", "Channel", "Priority", "SlaTargetHours", "ResolutionHours", "IsClosed", "IsSlaMet", "Satisfaction"})
+				in
+				    Selected
+

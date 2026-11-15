@@ -1,0 +1,17 @@
+CheckId,CheckName,Actual,Expected,Status,Note
+QA01,Years 2016-2025 without any European Dynamics award,0.0,0,PASS,
+QA02,Legacy award rows removed as exact duplicates (staging - fact),42.0,"small, explained",PASS,staging 4990 -> fact 4948
+QA03,FTS contracted EUR: fact minus staging,0.0,0 (+/- rounding),PASS,"fact 379,525,231 EUR"
+QA04,Award rows without a CPV key,0.0,0,PASS,
+QA05,Award rows without a buyer country,0.0,< 1% of rows,PASS,
+QA06,Award rows with an unknown buyer,0.0,0,PASS,
+QA07,Notice-lots with more than one counted value,0.0,0,PASS,
+QA08,Award values removed as outliers (> EUR 2 bn or < EUR 1),325.0,reported,PASS,"kept as rows (counted as awards), value set to NULL"
+QA09,% of European Dynamics award rows without any value,9.57,reported,PASS,values withheld or not published by the buyer
+QA10,eForms rows excluded (winner reference = buyer's service provider),70.0,reported,PASS,"see docs/DATA_QUALITY.md, DQ-03 and DQ-04"
+QA11,Distinct raw spellings resolved to a European Dynamics entity,67.0,reported,PASS,
+QA12,% of ED awards where the entity is not specified,6.22,< 10%,PASS,
+QA13,Missing days in DimDate,0.0,0,PASS,
+QA14,Award rows with procedure not stated,0.0,< 1% of rows,PASS,
+QA15,SIMULATED requests with an inconsistent SLA flag,0.0,0,PASS,
+QA16,Agencies without any RLS user (SIMULATED),0.0,0,PASS,

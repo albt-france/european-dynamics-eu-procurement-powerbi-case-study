@@ -1,0 +1,9 @@
+user_principal_name,agency_code
+tax.lead@ministry.example,TAX
+soc.lead@ministry.example,SOC
+reg.lead@ministry.example,REG
+bus.lead@ministry.example,BUS
+land.lead@ministry.example,LAND
+veh.lead@ministry.example,VEH
+deputy.director@ministry.example,TAX
+deputy.director@ministry.example,SOC

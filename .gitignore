@@ -1,0 +1,22 @@
+# environments and secrets
+.venv/
+.env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# raw downloads (about 4.6 GB, rebuilt by src/download_ted.py and src/download_fts.py)
+data/raw/
+
+# build scratch (HTML pages, headless Edge profile)
+.tmp/
+
+# Power BI Desktop local files
+powerbi/**/.pbi/localSettings.json
+powerbi/**/.pbi/cache.abf
+powerbi/**/cache.abf
+*.pbix
+
+# local notes
+DECISIONS.md
+*.log
